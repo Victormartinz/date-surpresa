@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Um convite especial ❤️</title>
+<style>
+  :root{
+    --red:#e92f1f;
+    --red-dark:#9f1c13;
+    --wine:#64120e;
+    --cream:#fff4ec;
+    --pink:#ff9b91;
+    --shadow:0 18px 45px rgba(65,0,0,.28);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%;font-family:Arial,Helvetica,sans-serif}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(255,255,255,.12) 0 2px, transparent 3px),
+      linear-gradient(145deg,#ff4937,#d82216 55%,#b6170f);
+    color:#fff;
+    overflow-x:hidden;
+  }
+  button,input{font:inherit}
+  .screen{
+    min-height:100vh;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:28px 18px;
+    position:relative;
+    overflow:hidden;
+  }
+  .screen.active{display:flex}
+  .phone{
+    width:min(430px,100%);
+    min-height:650px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .card{
+    width:min(360px,92vw);
+    background:rgba(104,17,11,.82);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:22px;
+    padding:28px 22px;
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(7px);
+    text-align:center;
+    position:relative;
+    z-index:3;
+  }
+  .pill{
+    display:inline-block;
+    padding:7px 14px;
+    border-radius:999px;
+    background:#fff;
+    color:var(--red-dark);
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.5px;
+    margin-bottom:18px;
+  }
+  h1{font-size:28px;line-height:1.1;margin:0 0 12px}
+  h2{font-size:21px;line-height:1.2;margin:0 0 18px}
+  p{line-height:1.5;margin:8px 0}
+  .emoji{font-size:76px;line-height:1;margin:4px 0 18px}
+  .btn{
+    border:0;
+    border-radius:12px;
+    padding:13px 18px;
+    cursor:pointer;
+    font-weight:800;
+    transition:.18s transform,.18s filter;
+  }
+  .btn:hover{filter:brightness(1.06)}
+  .btn:active{transform:scale(.97)}
+  .primary{background:#ffb4aa;color:#64120e}
+  .light{background:#fff;color:#8f1b13}
+  .ghost{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .options{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+  .option{
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    padding:15px 10px;
+    border-radius:14px;
+    cursor:pointer;
+    font-weight:700;
+  }
+  .option.selected{background:#ffb4aa;color:#64120e;border-color:#ffb4aa}
+  .calendar{
+    background:#fff;
+    color:#42110d;
+    border-radius:15px;
+    padding:13px;
+    margin:15px 0;
+    text-align:left;
+  }
+  .calendar label{display:block;font-size:12px;font-weight:800;margin-bottom:6px;color:#8c241b}
+  .calendar input{
+    width:100%;
+    border:1px solid #e0c5bf;
+    border-radius:10px;
+    padding:11px;
+    color:#42110d;
+    background:#fffaf8;
+  }
+  .final-list{
+    text-align:left;
+    background:rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:15px;
+    margin-top:14px;
+    font-size:14px;
+  }
+  .final-list div{margin:8px 0}
+  .hearts{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .heart{
+    position:absolute;
+    font-size:20px;
+    opacity:.8;
+    animation:float 7s linear infinite;
+  }
+  @keyframes float{
+    0%{transform:translateY(110vh) rotate(0deg);opacity:0}
+    15%{opacity:.8}
+    100%{transform:translateY(-15vh) rotate(25deg);opacity:0}
+  }
+  .tiny{font-size:12px;opacity:.72;margin-top:14px}
+  .progress{
+    position:absolute;top:16px;left:50%;transform:translateX(-50%);
+    width:min(330px,78vw);height:5px;border-radius:99px;background:rgba(255,255,255,.18);z-index:5
+  }
+  .progress span{display:block;height:100%;border-radius:99px;background:#fff;transition:.3s;width:20%}
+  .toast{
+    position:fixed;left:50%;bottom:22px;transform:translateX(-50%);
+    background:#fff;color:#64120e;padding:10px 14px;border-radius:12px;
+    font-size:13px;font-weight:800;box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transition:.25s;z-index:20
+  }
+  .toast.show{opacity:1}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+  .piece{position:absolute;top:-20px;width:8px;height:14px;animation:fall 2.8s linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+  @media(max-height:700px){.phone{min-height:590px}.card{padding:22px 18px}.emoji{font-size:62px}}
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+<div class="progress"><span id="progressBar"></span></div>
+
+<section class="screen active" id="s1">
+  <div class="phone">
+    <div class="card">
+      <div class="pill">POR FAVOR 💌</div>
+      <div class="emoji">🥺</div>
+      <h1>Tenho uma pergunta<br>muito importante...</h1>
+      <p>Promete pensar com carinho antes de responder?</p>
+      <div class="row" style="margin-top:20px">
+        <button class="btn primary" onclick="go(2)">Prometo ❤️</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s2">
+  <div class="phone">
+    <div class="card">
+      <div class="emoji">💌</div>
+      <h2>Você aceitaria fazer safadezas<br>comigo?</h2>
+      <p style="opacity:.82">Escolha com cuidado. 👀</p>
+      <div class="row" style="margin-top:20px">
+        <button class="btn primary" onclick="go(3)">SIM ❤️</button>
+        <button class="btn ghost" id="noBtn" onclick="moveNo()">Não 🙈</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s3">
+  <div class="phone">
+    <div class="card">
+      <div class="pill">📅 QUANDO VOCÊ TÁ LIVRE?</div>
+      <h2>Escolha uma data 😈😏</h2>
+      <div class="calendar">
+        <label for="date">DATA DO DATE </label>
+        <input id="date" type="date">
+      </div>
+      <button class="btn primary" onclick="saveDate()">Continuar →</button>
+      <div class="tiny">Se nenhuma data servir, a gente combina outra. 💗</div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s4">
+  <div class="phone">
+    <div class="card">
+      <div class="pill">🍿 O QUE TÁ A FIM DE COMER?</div>
+      <h2>Escolha a comida antes e depois das safadezas gostosas</h2>
+      <div class="options" id="foodOptions">
+        <button class="option" onclick="choose(this,'🍔 Hambúrguer')">🍔<br>Hambúrguer</button>
+        <button class="option" onclick="choose(this,'🍣 Sushi')">🍣<br>Sushi</button>
+        <button class="option" onclick="choose(this,'🍕 Pizza')">🍕<br>Pizza</button>
+        <button class="option" onclick="choose(this,'🍦 Sorvete')">🍦<br>Sorvete</button>
+        <button class="option" onclick="choose(this,' 🍫  Chocolate')"> 🍫 <br>Chocolate</button>
+      </div>
+      <button class="btn primary" style="margin-top:16px" onclick="saveChoice()">Escolher primeiro ❤️</button>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s5">
+  <div class="phone">
+    <div class="card">
+      <div class="emoji">🐧🌹</div>
+      <h1>Fechado. Safadinha rsrs ! ❤️😈</h1>
+      <p>Agora temos um pequeno plano 😈. <br>
+        vou te deixar louca de tesão 😈
+      </p>
+      <div class="final-list">
+        <div>📅 <b>Data:</b> <span id="finalDate">-</span></div>
+        <div>🍿 <b>Rolê:</b> <span id="finalChoice">-</span></div>
+        <div>📍 <b>Local:</b> a combinar no whats</div>
+        <div>⏰ <b>Horário:</b> a combinar no whats</div>
+      </div>
+      <p style="margin-top:18px">Tô contando os minutos gostosa 😈. </p>
+      <button class="btn light" style="margin-top:10px" onclick="celebrateAndWhatsApp()">
+  Confirmar ❤️
+</button>
+      <div class="tiny">Feito com carinho e safadezas.</div>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+<div class="confetti" id="confetti"></div>
+
+<script>
+  const state = { date:"", choice:"" };
+
+  function go(n){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('s'+n).classList.add('active');
+    const widths={1:20,2:40,3:60,4:80,5:100};
+    document.getElementById('progressBar').style.width=widths[n]+'%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function saveDate(){
+    const value=document.getElementById('date').value;
+    if(!value){ toast('Escolhe uma data primeiro 😌'); return; }
+    state.date=value;
+    document.getElementById('finalDate').textContent=new Date(value+'T12:00:00').toLocaleDateString('pt-BR');
+    go(4);
+  }
+
+  function choose(el,value){
+    document.querySelectorAll('#foodOptions .option').forEach(x=>x.classList.remove('selected'));
+    el.classList.add('selected');
+    state.choice=value;
+  }
+
+  function saveChoice(){
+    if(!state.choice){toast('Escolhe um rolê primeiro 👀');return;}
+    document.getElementById('finalChoice').textContent=state.choice;
+    go(5);
+  }
+
+  function moveNo(){
+    const b=document.getElementById('noBtn');
+    b.style.position='relative';
+    const x=(Math.random()*160)-80;
+    const y=(Math.random()*80)-40;
+    b.style.transform=`translate(${x}px,${y}px)`;
+    toast('Essa opção ficou meio tímida... 😂');
+  }
+
+  function toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg;t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),1700);
+  }
+
+  function celebrate(){
+    const c=document.getElementById('confetti');
+    c.innerHTML='';
+    for(let i=0;i<90;i++){
+      const p=document.createElement('span');
+      p.className='piece';
+      p.style.left=Math.random()*100+'%';
+      p.style.animationDelay=(Math.random()*.7)+'s';
+      p.style.transform=`rotate(${Math.random()*360}deg)`;
+      p.style.background=['#fff','#ffb4aa','#ffd1ca','#64120e'][Math.floor(Math.random()*4)];
+      c.appendChild(p);
+    }
+    toast('Date confirmado! ❤️');
+    setTimeout(()=>c.innerHTML='',3500);
+  }
+
+  function celebrateAndWhatsApp() {
+    // Primeiro faz a animação de confirmação
+    celebrate();
+
+    // Seu número com DDI + DDD, SEM espaços, parênteses ou traços
+    const meuNumero = "5598984048793";
+
+    // Monta a mensagem usando as escolhas feitas na página
+    const mensagem = `
+❤️ DATE CONFIRMADO ❤️
+
+📅 Data: ${document.getElementById('finalDate').textContent}
+🍿 Rolê: ${document.getElementById('finalChoice').textContent}
+
+Agora é oficial 😌❤️
+Até o nosso date!
+`;
+
+    // Converte a mensagem para funcionar corretamente na URL
+    const mensagemCodificada = encodeURIComponent(mensagem);
+
+    // Abre o WhatsApp
+    const whatsapp = `https://wa.me/${meuNumero}?text=${mensagemCodificada}`;
+
+    // Dá um pequeno tempo para a animação aparecer
+    setTimeout(() => {
+        window.location.href = whatsapp;
+    }, 1800);
+}
+
+  // Corações flutuando no fundo
+  const h=document.getElementById('hearts');
+  for(let i=0;i<22;i++){
+    const el=document.createElement('span');
+    el.className='heart';
+    el.textContent=['♥','♡','💗'][Math.floor(Math.random()*3)];
+    el.style.left=Math.random()*100+'%';
+    el.style.animationDelay=(Math.random()*7)+'s';
+    el.style.animationDuration=(5+Math.random()*5)+'s';
+    el.style.fontSize=(12+Math.random()*18)+'px';
+    h.appendChild(el);
+  }
+</script>
+</body>
+</html>
